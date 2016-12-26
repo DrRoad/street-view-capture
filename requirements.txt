@@ -1,0 +1,6 @@
+EasyProcess==0.2.3
+Pillow==3.4.2
+pyscreenshot==0.4.2
+python-xlib==0.18
+PyUserInput==0.1.11
+six==1.10.0
