@@ -1,19 +1,20 @@
 import os
 import time
 import pickle
+import argparse
 import pyscreenshot as ImageGrab
 from pymouse import PyMouse
 
 class StreetViewCapture:
-    def __init__(self):
+    def __init__(self, time=2, click=True):
         self.mouse = PyMouse()
 
         self.x, self.y = self.mouse.screen_size()
         self.x = int(self.x/2) - 150
         self.y = self.y - 100
 
-        self.wait = 2
-
+        self.wait = time
+        self.click = click
         self.picke_file = "data"
 
         try:
@@ -23,10 +24,11 @@ class StreetViewCapture:
 
         self.folder_name = "run-%03d" % self.run_number
 
-        self.dir = os.path.abspath(os.path.join(os.path.dirname("."), '..', 'img', self.folder_name))
+        self.dir = os.path.abspath(os.path.join(os.path.dirname("."), 'img', self.folder_name))
+        print(self.dir)
 
         try:
-            os.mkdir(self.dir)
+            os.makedirs(self.dir)
         except FileExistsError:
             pass
 
@@ -64,7 +66,9 @@ class StreetViewCapture:
 
         try:
             while True:
-                self.click_screen()
+                if self.click:
+                    self.click_screen()
+                    
                 time.sleep(self.wait)
                 self.save_screenshot()
         except KeyboardInterrupt:
@@ -75,5 +79,16 @@ class StreetViewCapture:
 
 
 if __name__ == '__main__':
-    sv = StreetViewCapture()
+    # Parse arguments
+    parser = argparse.ArgumentParser(description='street-view-capture')
+
+    parser.add_argument('-t', '--time', type=int, default=2,
+                        help='time in seconds between screen captures')
+
+    parser.add_argument('-c', '--click', action='store_true',
+                        help='clicks on the middle of the screen')
+
+    args = parser.parse_args()
+
+    sv = StreetViewCapture(time=args.time, click=args.click)
     sv.start()
